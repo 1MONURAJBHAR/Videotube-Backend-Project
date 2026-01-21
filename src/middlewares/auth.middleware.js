@@ -4,9 +4,6 @@ import jwt from "jsonwebtoken"
 import { User } from "../models/user.model.js";
 
 
-
-
-
 export const verifyJWT = asyncHandler(async (req, _, next) => {   // res -->no use we can replace it with "_"
  try {
      const token =
@@ -38,31 +35,6 @@ export const verifyJWT = asyncHandler(async (req, _, next) => {   // res -->no u
 
 
 
-
-//from Authorization header
-/**import jwt from "jsonwebtoken";
-
-export const verifyJWT = (req, res, next) => {
-  try {
-    const authHeader = req.headers["authorization"];
-
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({ message: "No token provided" });
-    }
-
-    const token = authHeader.split(" ")[1];
-
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-
-    req.user = decoded; // attach decoded payload to req
-    next();
-  } catch (error) {
-    console.error("JWT verification error:", error.message);
-    return res.status(401).json({ message: "Invalid access token there" });
-  }
-};
-
- */
 
 
 

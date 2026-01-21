@@ -60,29 +60,16 @@ userSchema.pre("save", async function (next) {
 })
 
 userSchema.methods.isPasswordCorrect = async function (password) {
-  //inside the user schema there is an object called "methods" (object-->{}), you can add as many as methods inside that object
-  //i.e: injecting this method into the methods object
   return await bcrypt.compare(password, this.password);
 };
-/**userSchema.methods is an object where you can define instance methods for your schema.
-Instance methods are functions that each document (record) created from the model can use.
 
-Key points:
-this inside isPasswordCorrect refers to the current document (user in the example).
-This allows you to access this.password and compare it with the provided password.
-It’s an instance method, not a static method (so you call it on a document, not on the model)
-
-Feature                    	methods(instance)	                 statics (model)
-How to call	              user.isPasswordCorrect()	         User.findByEmail()
-this context            	Current document	                 Model (collection)
-Use case	                Document-specific logic	           Collection-level logi*/
 
 
 userSchema.methods.generateAccessToken = function () {
-  return jwt.sign(    //.sign method will create a token
+  return jwt.sign(    
     {  //This is payload
-      _id: this._id,     //Here we are accessing all this info from the database (like:_id,username,email,etc..)
-      email: this.email,   //payloadname/payloadkey : valuefromdatabase
+      _id: this._id,     
+      email: this.email,  
       username: this.username,
       fullName:this.fullName,
     },
@@ -92,10 +79,6 @@ userSchema.methods.generateAccessToken = function () {
     }
   )
 }
-
-/**Access tokens are sent by the frontend with each request.
-Server checks the token, performs the requested action, then sends a response. */
-
 
 
 
@@ -112,7 +95,7 @@ userSchema.methods.generateRefreshToken = function () {
 }
 
 
-export const User = mongoose.model("User", userSchema); //This "User" directly interacts with the database
+export const User = mongoose.model("User", userSchema); 
 
 
 

@@ -6,7 +6,7 @@ import { ApiResponce } from "../utils/ApiResponce.js";
 import  asyncHandler  from "../utils/asyncHandler.js";
 
 const createTweet = asyncHandler(async (req, res) => {
-  //TODO: create tweet
+
   const { content } = req.body;
 
   if (!content || content.trim() === "") {
@@ -25,18 +25,16 @@ const createTweet = asyncHandler(async (req, res) => {
 });
 
 
-// ✅ Get all tweets of a particular user
+// Get all tweets of a particular user
 const getUserTweets = asyncHandler(async (req, res) => {
-  // TODO: get user tweets
+ 
   const { userId } = req.params; 
-  //console.log(userId);
 
-  // 1. Validate userId
   if (!mongoose.isValidObjectId(userId)) {
     throw new ApiError(400, "Invalid user ID");
   }
 
-  // 2. Find all Tweet documents where "owner" = userId
+  // Find all Tweet documents where "owner" = userId
   const tweets = await Tweet.find({ owner: userId })//Is userId ne alag alag tweets kiye honge, un sab tweet ke liye alag alag document banega tweet collection ke andar,un docs ko find karo ,aur owner filed populate karo
     .populate("owner", "username email") //// joins user details
     .sort({ createdAt: -1 }); // newest tweet first
@@ -53,29 +51,10 @@ Tweet.find({ owner: userId }) → gets all tweets written by that user.
 .sort({ createdAt: -1 }) → newest tweets appear first.
 ApiResponse → ensures consistent response format. */
 
-/**Example Response (assuming one tweet exists)
-{
-  "statusCode": 200,
-  "data": [
-    {
-      "_id": "6510a1d3f8d5f6c3b1234567",
-      "content": "Hello world 🌍",
-      "owner": {
-        "_id": "6510a0c9f8d5f6c3b1234566",
-        "username": "john_doe",
-        "email": "john@example.com"
-      },
-      "createdAt": "2025-09-25T14:15:22.123Z",
-      "updatedAt": "2025-09-25T14:15:22.123Z"
-    }
-  ],
-  "message": "User tweets fetched successfully"
-} */
-
 
 
 const updateTweet = asyncHandler(async (req, res) => {
-  //TODO: update tweet
+
   const { tweetId } = req.params;
   const { content } = req.body;
 
@@ -107,7 +86,7 @@ const updateTweet = asyncHandler(async (req, res) => {
 });
 
 const deleteTweet = asyncHandler(async (req, res) => {
-  //TODO: delete tweet
+
   const { tweetId } = req.params;
 
   if (!mongoose.isValidObjectId(tweetId)) {

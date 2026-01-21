@@ -6,13 +6,13 @@ import  asyncHandler from "../utils/asyncHandler.js";
 
 // Create a new playlist
 const createPlaylist = asyncHandler(async (req, res) => {
-  //TODO: create playlist
+
   const { name, description } = req.body;
   
   if (!name || !description) {
     throw new ApiError(400, "Playlist name and description are required");
   }
-                   //inside playlist collection creating a new playlist
+  
   const playlist = await Playlist.create({
     name,
     description,
@@ -28,32 +28,31 @@ const createPlaylist = asyncHandler(async (req, res) => {
 
 // Get all playlists of a user
 const getUserPlaylists = asyncHandler(async (req, res) => {
-  //TODO: get user playlists
+
   const { userId } = req.params;
   
   if (!mongoose.isValidObjectId(userId)) {
     throw new ApiError(400, "Inavlid user ID");
   }
-           //Inside Playlist collection i want all that playlist document whose owner id's are equal to userId.
+
   const playlists = await Playlist.find({ owner: userId }).populate("video").populate("owner", "username fullName avatar");
 
   return res
     .status(200)
-    .json(new ApiResponce(200, playlists, "user playlist fetched successfully"))
-  
+    .json(new ApiResponce(200, playlists, "user playlist fetched successfully"));
 
 });
 
 // Get a playlist by ID
 const getPlaylistById = asyncHandler(async (req, res) => {
-  //TODO: get playlist by id
+
   const { playlistId } = req.params;
   
   if (!mongoose.isValidObjectId(playlistId)) {
     throw new ApiError(400, "Invalid playlist ID")
     
   }
-          //find a playlist inside playlist collection by its playlistId
+        
   const playlist = await Playlist.findById(playlistId).populate("video").populate("owner", "fullName username avatar")
   
   if (!playlist) {
@@ -100,7 +99,7 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
 
 // Remove a video from playlist
 const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
-  // TODO: remove video from playlist
+  
   const { playlistId, videoId } = req.params;
 
   if (
@@ -110,8 +109,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid playlist or video ID");
   }
 
-  /**$pull:If videoId exists in the playlist’s video array → it gets removed.
-     If it doesn’t exist → nothing happens, MongoDB just skips. */
+ 
   const playlist = await Playlist.findByIdAndUpdate(
     playlistId,
     {
@@ -133,7 +131,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 
 // Delete a playlist
 const deletePlaylist = asyncHandler(async (req, res) => {
-  // TODO: delete playlist
+ 
   const { playlistId } = req.params;
 
   if (!mongoose.isValidObjectId(playlistId)) {
@@ -152,7 +150,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
 
 // Update a playlist
 const updatePlaylist = asyncHandler(async (req, res) => {
-  //TODO: update playlist
+ 
   const { playlistId } = req.params;
   const { name, description } = req.body;
 
@@ -185,30 +183,3 @@ export {
   deletePlaylist,
   updatePlaylist,
 };
-
-
-/**$push: { video: videoId } → always adds the videoId to the array, even if it already exists → ❌ you can get duplicates.
-$addToSet: { video: videoId } → only adds videoId if it’s not already present in the array → ✅ prevents duplicates automatically.
-So in your playlist schema, since video is an array of ObjectIds, $addToSet is the correct choice for addVideoToPlaylist. */
-
-
-/**In MongoDB:
-$addToSet: { video: videoId } → adds videoId only if it doesn’t exist already (prevents duplicates).
-
-$pull: { video: videoId } → removes all occurrences of videoId from the array (if present).
-
-👉 Example in your removeVideoFromPlaylist controller:
-
-await Playlist.findByIdAndUpdate(
-  playlistId,
-  { $pull: { video: videoId } },
-  { new: true }
-);
-
-
-If videoId exists in the playlist’s video array → it gets removed.
-If it doesn’t exist → nothing happens, MongoDB just skips.
-
-⚡ So you’ll use:
-$addToSet → when adding videos (to prevent duplicates).
-$pull → when removing videos (clean removal). */
